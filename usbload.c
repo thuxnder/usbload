@@ -85,6 +85,10 @@ static __attribute__ (( __noinline__ )) void putc(uint8_t data) {
 #define putc(x)
 #endif
 
+#if defined (__AVR_ATmega88__) || defined (__AVR_ATmega88P__)
+    static void (*jump_to_application)(void) = (void *)0;
+#endif
+
 /* supply custom usbDeviceConnect() and usbDeviceDisconnect() macros
  * which turn the interrupt on and off at the right times,
  * and prevent the execution of an interrupt while the pullup resistor
@@ -310,7 +314,11 @@ void leave_bootloader(void)
     PORTD = 0;
 
     /* start main program at address 0 */
+#if defined (__AVR_ATmega88__) || defined (__AVR_ATmega88P__)
+    jump_to_application();
+#elif defined (__AVR_ATmega168__) || defined (__AVR_ATmega168P__)
     asm volatile ("jmp 0");
+#endif
 }
 
 int __attribute__ ((noreturn,OS_main)) main(void)

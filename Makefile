@@ -5,7 +5,12 @@ F_CPU = 20000000UL
 MCU = atmega168
 
 SRC = usbload.c
-ASRC = usbdrv/usbdrvasm.S interrupts.S
+ASRC = usbdrv/usbdrvasm.S
+ifeq ($(MCU),atmega168)
+	ASRC += interrupts.168.S
+else ifeq ($(MCU),atmega88)
+	ASRC += interrupts.88.S
+endif
 OBJECTS += $(patsubst %.c,%.o,${SRC})
 OBJECTS += $(patsubst %.S,%.o,${ASRC})
 HEADERS += $(shell echo *.h)
